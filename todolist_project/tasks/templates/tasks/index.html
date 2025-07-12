@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Task List</title>
+</head>
+<body>
+  <h1>My Task List</h1>
+  <ul id="task-list"></ul>
+
+  <h2>Create Task</h2>
+  <form id="task-form">
+    <input type="text" id="title" placeholder="Title" required><br><br>
+    <input type="text" id="description" placeholder="Description"><br><br>
+
+    <label>Priority:</label>
+    <select id="priority" required>
+      <option value="Low">Low</option>
+      <option value="Medium">Medium</option>
+      <option value="High">High</option>
+    </select><br><br>
+
+    <label>Category:</label>
+    <select id="category" required>
+      <option value="Personal">Personal</option>
+      <option value="Study">Study</option>
+      <option value="Work">Work</option>
+    </select><br><br>
+
+    <label>Due Date:</label>
+    <input type="date" id="due_date" required><br><br>
+
+    <button type="submit">Add Task</button>
+  </form>
+
+  <script>
+    const baseUrl = "http://127.0.0.1:8000/api/tasks/";
+    const list = document.getElementById("task-list");
+
+    // ✅ Get CSRF token
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split(";");
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === name + "=") {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+
+    const csrftoken = getCookie("csrftoken");
+
+    // ✅ Display tasks
+    fetch(baseUrl, {
+      credentials: "include"
+    })
+    .then(res => res.json())
+    .then(tasks => {
+      list.innerHTML = "";
+      tasks.forEach(task => {
+        const li = document.createElement("li");
+        li.innerText = `${task.title} - ${task.completed ? "✔️" : "❌"}`;
+
+        const btn = document.createElement("button");
+        btn.innerText = task.completed ? "Mark Incomplete" : "Mark Done";
+        btn.onclick = () => {
+          fetch(baseUrl + task.id + "/", {
+            method: "PATCH",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": csrftoken
+            },
+            body: JSON.stringify({ completed: !task.completed })
+          }).then(() => window.location.reload());
+        };
+
+        li.appendChild(btn);
+        list.appendChild(li);
+      });
+    });
+
+    // ✅ Create a task
+    document.getElementById("task-form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      fetch(baseUrl, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrftoken
+        },
+        body: JSON.stringify({
+          title: document.getElementById("title").value,
+          description: document.getElementById("description").value,
+          priority: document.getElementById("priority").value,
+          category: document.getElementById("category").value,
+          due_date: document.getElementById("due_date").value
+        })
+      })
+      .then(res => {
+        if (!res.ok) {
+          return res.json().then(data => {
+            alert("Error: " + JSON.stringify(data));
+            throw new Error("Task not created");
+          });
+        }
+        return res.json();
+      })
+      .then(task => {
+        alert("Task Created!");
+        window.location.reload();
+      });
+    });
+  </script>
+</body>
+</html>
