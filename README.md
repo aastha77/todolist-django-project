@@ -30,7 +30,7 @@ This is a full-stack **To-Do Task Manager** built using Django and JavaScript (v
 ## 🚀 How to Run
 
 ```bash
-git clone https://github.com/yourusername/todolist-django-project.git
+git clone  https://github.com/aastha77/todolist-django-project.git
 cd todolist_project
 pip install -r requirements.txt
 python manage.py migrate
@@ -41,27 +41,3 @@ python manage.py runserver
 
 
 ---
-
-## ✅ Bonus Tip: Create a `screenshots/` folder
-
-1. Inside your project folder, create a `screenshots/` folder.
-2. Save your 2 screenshots there as:
-   - `frontend.png`
-   - `api.png`
-3. Reference them in your `README.md` using markdown:  
-   `![Alt Text](screenshots/frontend.png)`
-
----
-
-## ✅ Summary
-
-| Task | Done? |
-|------|-------|
-| Upload 2 screenshots in submission form (frontend + api) | ✅ |
-| Add all project files to GitHub | ✅ |
-| Include `README.md` with description + screenshots | ✅ |
-
----
-
-Once you're done, send me your GitHub repo link — I’ll review it instantly if you want feedback.  
-And if you're ready for your **next project**, let’s go 🚀
